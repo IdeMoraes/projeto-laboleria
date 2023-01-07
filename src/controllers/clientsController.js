@@ -1,11 +1,11 @@
 import connection from "../db.js";
 
-export async function insertCake(req, res){
-    const { name, price, image, description } = req.body;
+export async function insertClient(req, res){
+    const { name, address, phone } = req.body;
     try {
         const result = await connection.query(
-            "INSERT INTO cakes (name, price, image, description) VALUES ($1, $2, $3, $4)",
-            [name, price, image, description]
+            "INSERT INTO clients (name, address, phone) VALUES ($1, $2, $3)",
+            [name, address, phone]
         );
         res.sendStatus(201);
     } catch (error) {
