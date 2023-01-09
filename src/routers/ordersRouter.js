@@ -7,5 +7,6 @@ const ordersRouter = Router();
 ordersRouter.post('/order', validateOrder, insertOrder);
 ordersRouter.get('/orders', selectOrders);
 ordersRouter.get('/orders/:id', selectOrders);
+ordersRouter.get('/clients/:id/orders', selectOrders);
 
 export default ordersRouter;
