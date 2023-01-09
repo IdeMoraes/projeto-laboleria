@@ -6,5 +6,6 @@ import { validateOrder } from "../middlewares/validateOrder.js";
 const ordersRouter = Router();
 ordersRouter.post('/order', validateOrder, insertOrder);
 ordersRouter.get('/orders', selectOrders);
+ordersRouter.get('/orders/:id', selectOrders);
 
 export default ordersRouter;
