@@ -2,6 +2,7 @@ import connection from "../db.js";
 
 export async function insertCake(req, res){
     const { name, price, image, description } = req.body;
+    console.log(price);
     try {
         const result = await connection.query(
             "INSERT INTO cakes (name, price, image, description) VALUES ($1, $2, $3, $4)",
