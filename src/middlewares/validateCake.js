@@ -5,7 +5,8 @@ const cakeSchema = joi.object({
     name: joi.string().min(2).required(),
     price: joi.number().greater(0).required(),
     image: joi.string().uri().required(),
-    description: joi.string().required().allow('')
+    description: joi.string().required().allow(''),
+    flavourId: joi.number().required().integer()
 });
 
 export async function validateCake(req, res, next){
@@ -18,10 +19,16 @@ export async function validateCake(req, res, next){
         return res.status(400).send(validation.error.details[0].message);
     }
     try {
-        const result = await connection.query(
+        const flavourResult = await connection.query(
+            `SELECT * FROM flavours WHERE id='${cake.flavourId}';`
+        );
+        if(flavourResult.rowCount===0){
+            return res.sendStatus(404);
+        };
+        const cakeResult = await connection.query(
             `SELECT * FROM cakes WHERE name='${cake.name}';`
         );
-        if(result.rowCount>0){
+        if(cakeResult.rowCount>0){
             return res.sendStatus(409);
         }
     } catch (error) {
