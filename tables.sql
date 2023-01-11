@@ -27,5 +27,6 @@ CREATE TABLE orders (
 	"cakeId" INTEGER NOT NULL REFERENCES cakes("id"),
 	quantity INTEGER NOT NULL CHECK(quantity>0 AND quantity<5),
 	"createdAt" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-	"totalPrice" NUMERIC NOT NULL
+	"totalPrice" NUMERIC NOT NULL,
+	"isDelivered" BOOLEAN NOT NULL DEFAULT FALSE
 );

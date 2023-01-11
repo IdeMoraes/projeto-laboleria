@@ -34,7 +34,6 @@ export async function selectOrders(req, res){
         const result = await connection.query(
             `SELECT clients.name as "clientName", clients.address, clients.phone, cakes.name as "cakeName", cakes.price, cakes.description, cakes.image, flavours.id as "flavourId", flavours.name as "flavourName", orders.* FROM orders JOIN clients ON orders."clientId"=clients.id JOIN cakes ON orders."cakeId"=cakes.id JOIN flavours ON flavours.id=cakes."flavourId" ${filterByDate} ${filterByOrderId} ${filterByClientId};`
         );
-        console.log(result.rows);
         if(result.rowCount===0){
             if(date){
                 return res.status(404).send([]);
@@ -43,14 +42,15 @@ export async function selectOrders(req, res){
             }
         };
         const answer = result.rows.map((element)=>{
-            const {clientId, clientName, address, phone, cakeId, cakeName, price, description, image, id, createdAt, quantity, totalPrice, flavourId, flavourName} = element;
+            const {clientId, clientName, address, phone, cakeId, cakeName, price, description, image, id, createdAt, quantity, totalPrice, flavourId, flavourName, isDelivered} = element;
             if(req.url.includes('clients')){
                 return {
                     clientId,
                     cakeId,
                     flavourId,
                     quantity,
-                    totalPrice    
+                    totalPrice,
+                    isDelivered
                 }
             } else{
                 return {
@@ -74,12 +74,33 @@ export async function selectOrders(req, res){
                     orderId: id,
                     createdAt,
                     quantity,
-                    totalPrice
+                    totalPrice,
+                    isDelivered
                 }
 
             }
         });
         return res.status(200).send(answer);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(`${error.name}: ${error.message}`);
+    }
+};
+
+export async function updateOrder(req, res){
+    const {id} = req.params;
+    if(!Number.isInteger(Number(id))){
+        return res.sendStatus(400);
+    };
+    try {
+        const order = await connection.query(
+            `SELECT * FROM orders WHERE id='${id}';`
+        );
+        if(order.rowCount===0){
+            return res.sendStatus(404);
+        }
+        await connection.query(`UPDATE orders SET "isDelivered"='true' WHERE id = ${id};`);
+        res.sendStatus(204);
     } catch (error) {
         console.log(error);
         res.status(500).send(`${error.name}: ${error.message}`);
