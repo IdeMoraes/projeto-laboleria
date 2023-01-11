@@ -32,7 +32,7 @@ export async function selectOrders(req, res){
     };
     try {
         const result = await connection.query(
-            `SELECT clients.name as "clientName", clients.address, clients.phone, cakes.name as "cakeName", cakes.price, cakes.description, cakes.image, orders.* FROM orders JOIN clients ON orders."clientId"=clients.id JOIN cakes ON orders."cakeId"=cakes.id ${filterByDate} ${filterByOrderId} ${filterByClientId};`
+            `SELECT clients.name as "clientName", clients.address, clients.phone, cakes.name as "cakeName", cakes.price, cakes.description, cakes.image, flavours.id as "flavourId", flavours.name as "flavourName", orders.* FROM orders JOIN clients ON orders."clientId"=clients.id JOIN cakes ON orders."cakeId"=cakes.id JOIN flavours ON flavours.id=cakes."flavourId" ${filterByDate} ${filterByOrderId} ${filterByClientId};`
         );
         console.log(result.rows);
         if(result.rowCount===0){
@@ -43,11 +43,12 @@ export async function selectOrders(req, res){
             }
         };
         const answer = result.rows.map((element)=>{
-            const {clientId, clientName, address, phone, cakeId, cakeName, price, description, image, id, createdAt, quantity, totalPrice} = element;
+            const {clientId, clientName, address, phone, cakeId, cakeName, price, description, image, id, createdAt, quantity, totalPrice, flavourId, flavourName} = element;
             if(req.url.includes('clients')){
                 return {
                     clientId,
                     cakeId,
+                    flavourId,
                     quantity,
                     totalPrice    
                 }
@@ -65,6 +66,10 @@ export async function selectOrders(req, res){
                         price,
                         description,
                         image
+                    },
+                    flavour:{
+                        id: flavourId,
+                        name: flavourName
                     },
                     orderId: id,
                     createdAt,
